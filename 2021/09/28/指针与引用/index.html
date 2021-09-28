@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="Hexo" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        指针与引用｜undefined
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2021/09/28/指针与引用/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/blog-style.css">
+
+
+    <!-- Pygments Github CSS -->
+    
+<link rel="stylesheet" href="/css/syntax.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    Hexo
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>指针与引用</h1>
+                    
+                    <span class="meta">
+                         作者 John Doe
+                        <span>
+                          日期 2021-09-28
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            指针与引用
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h1 id="善于使用指针和引用"><a href="#善于使用指针和引用" class="headerlink" title="善于使用指针和引用"></a>善于使用指针和引用</h1><h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><h2 id="1-1-什么是指针"><a href="#1-1-什么是指针" class="headerlink" title="1.1 什么是指针"></a>1.1 什么是指针</h2><p>首先，在弄清楚什么是指针之前，务必要知道时数据在内存中是如何存储的</p>
+<ul>
+<li>如果在程序中定义了一个变量，在编译时就给这个变量<strong>分配内存单元</strong>。系统根据定义的变量类型，分配一定长度的空间。例如：c++编译系统一般为整型变量分配4个字节。内存区的每个字节有一个编号，这就是<strong>地址</strong>。</li>
+<li>程序经过编译以后已经将变量名转换为变量的地址，对变量值得存取都是通过地址进行的。例如：语句”cout&lt;&lt; i;”的执行是这样的：根据变量名与地址的对应关系，找到变量i的地址2000，然后从由2000开始的4个字节中取出数据（即变量的值3），把它输出。<strong>这种按变量地址存取变量值的方式称为直接存取方式，或直接访问方式。</strong></li>
+<li>还可以定义这样一个特殊的变量，专门用它来存放地址。这样把变量i的地址存放在变量中，这个变量称为<strong>指针变量</strong>，<strong>一个变量的地址称为该变量的指针</strong><h2 id="1-2-变量与指针"><a href="#1-2-变量与指针" class="headerlink" title="1.2 变量与指针"></a>1.2 变量与指针</h2></li>
+</ul>
+<p><strong>变量的指针就是变量的地址，用来存放变量地址的变量就是指针变量。</strong> 如果i_pointer是一个指针变量，而*<strong>i_pointer表示i_pointer所指向的变量</strong>。</p>
+<h3 id="1-2-1定义指针变量"><a href="#1-2-1定义指针变量" class="headerlink" title="1.2.1定义指针变量"></a>1.2.1定义指针变量</h3> <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i,j;</span><br><span class="line"><span class="keyword">int</span> *pointer_1,*pointer_2;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>第二行所定义的指针变量是<strong>指向整型数据</strong>的指针变量（pointer_1和pointer_2只能存放整型数据的地址。int为指针变量的<strong>基类型</strong>）</p>
+</blockquote>
+<ul>
+<li>所以定义指针变量的一般形式为：<br>基类型 * 指针变量名</li>
+<li>那么怎样使一个指针变量指向另一个变量？只需要把被指向的变量的地址赋值给指针变量即可。例如：<strong>pointer_1=&i;</strong><br>&amp;是取地址运算符， &amp;i是变量i的地址，执行该语句后pointer_1的值就是变量i所占存储单元的<strong>起始地址</strong><h3 id="1-2-2引用指针变量"><a href="#1-2-2引用指针变量" class="headerlink" title="1.2.2引用指针变量"></a>1.2.2引用指针变量</h3>首先，有两个与指针变量有关的运算符：<br>(1)&amp;:取地址运算符<br>(2)*:指针运算符(间接访问运算符)<blockquote>
+<p>&amp;*pointer_1和 *&amp;a的含义?（假设已经执行了”pointer_1=&a;”）答案：前者为a的地址，后者为a本身。</p>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> *p1,*p2,*p,a,b;</span><br><span class="line">   cin&gt;&gt;a&gt;&gt;b;</span><br><span class="line">   p1 = &amp;a;</span><br><span class="line">   p2 = &amp;b;</span><br><span class="line">   <span class="keyword">if</span>(a &lt; b)&#123;</span><br><span class="line">     p = p1;</span><br><span class="line">     p1 = p2;</span><br><span class="line">     p2 = p;</span><br><span class="line">   &#125;</span><br><span class="line">   cout&lt;&lt;<span class="string">&quot;a =&quot;</span>&lt;&lt;a&lt;&lt;<span class="string">&quot;b = &quot;</span>&lt;&lt;b&lt;&lt;endl;</span><br><span class="line">   cout&lt;&lt;<span class="string">&quot;max = &quot;</span>&lt;&lt;*p1&lt;&lt;<span class="string">&quot;min = &quot;</span>&lt;&lt;p2&lt;&lt;endl;</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+运行结果：a = 45 b = 48<br>max = 78 min = 45<blockquote>
+<p>这个问题的算法是不交换整型变量的值，而是交换两个指针变量的值。</p>
+</blockquote>
+</li>
+</ul>
+<p>如下图所示：<br><img src="%E6%8C%87%E9%92%881.png" alt="zhizheng"><img src="%E6%8C%87%E9%92%882.png" alt="zhizheng1"></p>
+<h3 id="1-2-3-用指针做函数参数"><a href="#1-2-3-用指针做函数参数" class="headerlink" title="1.2.3 用指针做函数参数"></a>1.2.3 用指针做函数参数</h3><p>如果一个函数的参数是指针类型，它的作用是将一个变量的地址传送给被调用函数的形参。</p>
+<ul>
+<li>例子同上例<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//交换a和b的值</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *p1,<span class="keyword">int</span> *p2)</span></span>;  <span class="comment">//函数声明</span></span><br><span class="line">  <span class="keyword">int</span> *pointer_1, *pointer_2,a,b;</span><br><span class="line">  cin&gt;&gt;a&gt;&gt;b;</span><br><span class="line">  pointer_1 = &amp;a;</span><br><span class="line">  pointer_2 = &amp;b;</span><br><span class="line">  <span class="keyword">if</span>(a &lt; b)<span class="built_in">swap</span>(pointer_1,pointer_2);<span class="comment">//如果a&lt;b，使*pointer_1和*pointer_2互换</span></span><br><span class="line">  cout&lt;&lt;<span class="string">&quot;max = &quot;</span>&lt;&lt;a&lt;&lt;<span class="string">&quot;min = &quot;</span>&lt;&lt;b&lt;&lt;endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *p1,<span class="keyword">int</span> *p2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> temp;</span><br><span class="line">  temp = *p1;</span><br><span class="line">  *p1 = *p2;</span><br><span class="line">  *p2 = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+分析如下图所示：<br><img src="%E6%8C%87%E9%92%883.png" alt="zhizheng"></li>
+<li>如果写成以下就有问题了：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *p1,<span class="keyword">int</span> *p2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> *temp;</span><br><span class="line">  *temp = *p1;<span class="comment">//此语句有问题</span></span><br><span class="line">  *p1 = *p2;</span><br><span class="line">  *p2 = *temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><em>temp 是指针变量，由于未对它赋值，并无确定的值，在这种情况下，对</em>temp 赋值是危险的。</p>
+<ul>
+<li>试分析如下函数能否交换a和b的值<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> temp;</span><br><span class="line">  temp = x;</span><br><span class="line">  x = y;</span><br><span class="line">  y = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+答案是不能交换。<strong>由于虚实结合是采取单向的“值传递”方式，只能从实参向形参传数据，形参值的改变无法回传给实参。</strong></li>
+<li>下面这个例子也是不能交换a和b的值，<strong>因为调用函数时不会改变实参指针变量的值，但可以改变实参指针变量所指向变量的值。</strong><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//试图交换pointer_1和pointer_2的地址值</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *p1,<span class="keyword">int</span> *p2)</span></span>;  <span class="comment">//函数声明</span></span><br><span class="line">  <span class="keyword">int</span> *pointer_1, *pointer_2,a,b;</span><br><span class="line">  cin&gt;&gt;a&gt;&gt;b;</span><br><span class="line">  pointer_1 = &amp;a;</span><br><span class="line">  pointer_2 = &amp;b;</span><br><span class="line">  <span class="keyword">if</span>(a &lt; b)<span class="built_in">swap</span>(pointer_1,pointer_2);<span class="comment">//如果a&lt;b，使*pointer_1和*pointer_2互换</span></span><br><span class="line">  cout&lt;&lt;<span class="string">&quot;max = &quot;</span>&lt;&lt;*pointer_1&lt;&lt;<span class="string">&quot;min = &quot;</span>&lt;&lt;*pointer_2&lt;&lt;endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *p1,<span class="keyword">int</span> *p2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> *temp;</span><br><span class="line">  temp = p1;</span><br><span class="line">  p1 = p2;</span><br><span class="line">  p2 = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="1-3数组与指针"><a href="#1-3数组与指针" class="headerlink" title="1.3数组与指针"></a>1.3数组与指针</h2><h3 id="1-3-1-指向数组元素的指针"><a href="#1-3-1-指向数组元素的指针" class="headerlink" title="1.3.1 指向数组元素的指针"></a>1.3.1 指向数组元素的指针</h3></li>
+<li>在c和c++中，数组名代表数组中第1个元素（即序号为0的元素）的地址。因此，下面两个语句等价：<br>int *p;<br>int a[10];<br>p = &amp;a[0];<br>p = a;<blockquote>
+<p>数组名a不代表整个数组，上述”p = a”的作用是把a数组的首元素的地址赋给指针变量p。</p>
+</blockquote>
+</li>
+<li> 如果指针变量p已经指向数组中的一个元素，则p+1 指向同一数组中的下一个元素（而不是将p的值简单加1）p+1 所代表的的地址实际上是p+1*d,d是一个数组元素所占的字节数</li>
+</ul>
+<p><strong>如果p的初值为&amp;a[0]则：</strong></p>
+<ul>
+<li>1，p+i 和 a+i就是a[i]的地址</li>
+<li>2.*(p+i)或 *(a+i)是p+i或a+i所指向的数组元素，即a[i];<br>（数组名后面的方括号[]，实际上是<strong>变址运算符</strong>，对a [i]的求解过程是：先按a+i * d计算数组元素的地址，然后找出此地址所指向的单元中的值。）</li>
+<li>指向数组元素的指针变量也可以滴啊下标，例如：p[i]与*(p+i)等价<br>例1.3：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//下标法</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"> <span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"> <span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> a[<span class="number">10</span>];</span><br><span class="line">   <span class="keyword">int</span> i;</span><br><span class="line">   <span class="keyword">for</span>(i = <span class="number">0</span>; i&lt; <span class="number">10</span>; i++)</span><br><span class="line">   cin&gt;&gt;a[i];</span><br><span class="line">   cout&lt;&lt;endl;</span><br><span class="line">   <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">   cout&lt;&lt;a[i]&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">   cout&lt;&lt;endl;</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="comment">//指针法</span></span><br><span class="line"> 将上面程序第<span class="number">7</span>行和第<span class="number">10</span>行的<span class="string">&quot;a[i]&quot;</span>改为<span class="string">&quot;*(a+i)&quot;</span></span><br><span class="line"> <span class="comment">//用指针变量指向数组元素</span></span><br><span class="line"> <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"> <span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"> <span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> a[<span class="number">10</span>];</span><br><span class="line">   <span class="keyword">int</span> i,*p = a;</span><br><span class="line">   <span class="keyword">for</span>(i = <span class="number">0</span>;i &lt; <span class="number">10</span>; i++)</span><br><span class="line">   cin&gt;&gt;*(p+i);</span><br><span class="line">   cout&lt;&lt;endl;</span><br><span class="line">   <span class="keyword">for</span>(p = a; p &lt; (a + <span class="number">10</span>);p++)</span><br><span class="line">   cout&lt;&lt;*p&lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">   cout&lt;&lt;endl;</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>第三种方法比一二都快，用指针变量直接指向元素，不必每次重新计算地址，像p++这样的自加操作是比较快的。这种方法能提高执行效率。</p>
+</blockquote>
+<h3 id="1-3-2用指针变量做函数形参接受数组地址"><a href="#1-3-2用指针变量做函数形参接受数组地址" class="headerlink" title="1.3.2用指针变量做函数形参接受数组地址"></a>1.3.2用指针变量做函数形参接受数组地址</h3></li>
+<li><strong>数组名代表数组首元素的地址，用数组名做函数的参数，传递的是数组首元素的地址</strong></li>
+<li>C++编译系统将形参数组名一律作为指针变量来处理</li>
+<li>“ void select_sort(int array[], int n)”等价于”void select_sort(int *array,int n)”解释：在调用函数时，系统会建立一个指针变量array，用来存放从主调函数传递过来的实参数组首元素的地址。</li>
+<li><strong>实际上在函数调用时并不存在一个占有存储空间的形参数组，只有指针变量</strong></li>
+<li>a++ //语法错误，a 是常量，不能改变 a 代表一个固定的地址<h2 id="1-4-字符串与指针"><a href="#1-4-字符串与指针" class="headerlink" title="1.4 字符串与指针"></a>1.4 字符串与指针</h2>例：将字符串str1复制为字符串str2<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">char</span> str1 [] = <span class="string">&quot;I love CHINA!&quot;</span>,str2[<span class="number">20</span>],*p1,*p2;</span><br><span class="line">  p1 = str1;p2 = str2;</span><br><span class="line">  <span class="keyword">for</span>(;p1!=<span class="string">&#x27;\0&#x27;</span>;p1++,p2++)</span><br><span class="line">  *p2 = *p1;</span><br><span class="line">  *p2 = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">  p1 = str1; p2 = str2;</span><br><span class="line">  cout&lt;&lt;<span class="string">&quot;str1 is :&quot;</span>&lt;&lt;p1&lt;&lt;endl;</span><br><span class="line">  cout&lt;&lt;<span class="string">&quot;str2 is:&quot;</span>&lt;&lt;p2&lt;&lt;endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>对字符指针变量p1，p2的初始化，实际上是把字符串中第1个字符的地址赋给p1,p2;<strong>注意，在内存中，字符串的最后被自动加了一个’\0’,因此在输出时能确定字符串的终止位置</strong>，其实对于上述例子而言：用string变量来处理是十分简单的</p>
+</blockquote>
+<h2 id="1-5函数与指针"><a href="#1-5函数与指针" class="headerlink" title="1.5函数与指针"></a>1.5函数与指针</h2>指针变量也可以指向一个函数，一个函数在编译时被分配给一个入口地址。这个<strong>函数入口地址 就称为函数的指针</strong>，可以用一个指针指向函数，然后通过该指针变量调用此函数。</li>
+<li>一般格式：<br><strong>函数类型（*变量名）（函数形参表）;</strong></li>
+<li>例：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">max</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>;<span class="comment">//函数声明</span></span><br><span class="line">   <span class="built_in"><span class="keyword">int</span></span> (*p)(<span class="keyword">int</span> <span class="keyword">int</span>); <span class="comment">//定义指向函数的指针变量p</span></span><br><span class="line">   <span class="keyword">int</span> a ,b, m;</span><br><span class="line">   p = max;</span><br><span class="line">   cin&gt;&gt;a&gt;&gt;b;</span><br><span class="line">   m = <span class="built_in">p</span>(a,b);</span><br><span class="line">   cout&lt;&lt;<span class="string">&quot;max = &quot;</span>&lt;&lt;m&lt;&lt;endl;</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果写成”int *p(int,int);”，则由于（）优先级高于 * 就成了一个<strong>声明函数的语句了（其返回值为指向整型变量的指针）</strong>；其中”p = max”的作用是将函数max的入口地址赋给指针变量p，这时p才指向函数max。</p>
+</blockquote>
+<h2 id="1-6返回指针值的函数"><a href="#1-6返回指针值的函数" class="headerlink" title="1.6返回指针值的函数"></a>1.6返回指针值的函数</h2></li>
+<li>一般类型：<br>*<em>类型名 <em>函数名（参数列表）</em></em><br>例如： int <em>a(int x,int y);<br>解释：a是函数名，返回值为一个指向整型数据的指针。注意在</em>a的两侧没有括号（如果有括号就变成了1.5中的指向函数的指针变量了）<h2 id="1-7-指针数组"><a href="#1-7-指针数组" class="headerlink" title="1.7 指针数组"></a>1.7 指针数组</h2></li>
+<li>如果一个数组，其元素均为指针类型数据，该数组称为指针数组。</li>
+<li>定义形式： 类型名 *数组名[数组长度];</li>
+<li>例如： int *p[4]; 注意不要写成”int( *p)[4];”这是指向一维数组的指针变量。   </li>
+<li>例若干字符串按字母顺序（由小到大）输出<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(<span class="keyword">char</span> *name[],<span class="keyword">int</span> n)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">char</span> *name[], <span class="keyword">int</span> n)</span></span>;</span><br><span class="line">  <span class="keyword">char</span> *name[] = &#123;<span class="string">&quot;BASIC&quot;</span>.<span class="string">&quot;FORTRAN&quot;</span>,<span class="string">&quot;C++&quot;</span>,<span class="string">&quot;Pascal&quot;</span>,<span class="string">&quot;COBOL&quot;</span>&#125;;<span class="comment">//定义指针数组</span></span><br><span class="line">  <span class="keyword">int</span> n = <span class="number">5</span>;</span><br><span class="line">  <span class="built_in">sort</span>(name,n);</span><br><span class="line">  <span class="built_in">print</span>(name,n);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(<span class="keyword">char</span> *name[],<span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">char</span> *temp;</span><br><span class="line">  <span class="keyword">int</span> i,j,k;</span><br><span class="line">  <span class="keyword">for</span>(i = <span class="number">0</span>;i &lt; n - <span class="number">1</span>; i++)&#123;</span><br><span class="line">    k = i;</span><br><span class="line">    <span class="keyword">for</span>(j = i + <span class="number">1</span>;j &lt; n; j++)</span><br><span class="line">     <span class="keyword">if</span>(<span class="built_in">strcmp</span>(name[k],name[j])&gt;<span class="number">0</span>) k = j;<span class="comment">//注意[]是变址符</span></span><br><span class="line">     <span class="keyword">if</span>(k != j)</span><br><span class="line">      &#123;</span><br><span class="line">        temp = name[i];</span><br><span class="line">        name[i] = name[k];</span><br><span class="line">        name[k] = temp;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;     </span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">char</span> *name[],<span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> i;</span><br><span class="line">  <span class="keyword">for</span>(i = <span class="number">0</span>;i &lt; n;i++)</span><br><span class="line">  cout&lt;&lt;name[i]&lt;&lt;endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>sort函数的形参name是指针数组名，接受实参数组name的首元素的地址，因此，形参name和实参name指的是同一数组。</p>
+</blockquote>
+<h2 id="1-8指向指针的指针"><a href="#1-8指向指针的指针" class="headerlink" title="1.8指向指针的指针"></a>1.8指向指针的指针</h2>从上例：数组名name代表该指针数组首元素的地址，<strong>name+i是name[i]的地址，由于name[i]的值是地址，因此name+i就是指向指针型数据的指针</strong>。</li>
+<li>定义： char **p;(运算符的结合性从右到左)</li>
+<li>例1.8：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">char</span> **p;</span><br><span class="line">  <span class="keyword">char</span> *name[] = &#123;<span class="string">&quot;BASIC&quot;</span>,<span class="string">&quot;FORTRAN&quot;</span>,<span class="string">&quot;C++&quot;</span>,<span class="string">&quot;Pascal&quot;</span>,<span class="string">&quot;COBOL&quot;</span>&#125;;</span><br><span class="line">  p = name + <span class="number">2</span>;</span><br><span class="line">  cout&lt;&lt;*p&lt;&lt;endl;<span class="comment">//输出name[2]指向的字符串</span></span><br><span class="line">  cout&lt;&lt;**p&lt;&lt;endl；<span class="comment">//输出name[2]指向的字符串中的第一个字符</span></span><br><span class="line">&#125;</span><br><span class="line">运行结果：</span><br><span class="line">C++ </span><br><span class="line">C</span><br></pre></td></tr></table></figure>
+<h2 id="1-9-const指针"><a href="#1-9-const指针" class="headerlink" title="1.9 const指针"></a>1.9 const指针</h2><h3 id="1-指向常量的指针变量"><a href="#1-指向常量的指针变量" class="headerlink" title="1.指向常量的指针变量"></a>1.指向常量的指针变量</h3></li>
+<li>定义一般形式：const 类型名 * 指针变量名；</li>
+<li>例；<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">12</span>,b = <span class="number">15</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> *p = &amp;a;<span class="comment">//定义了p为指向整型变量a的const指针变量</span></span><br><span class="line">*p = <span class="number">15</span>;          <span class="comment">//试图通过p改变它指向的对象a的值，非法</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>但是指针变量p的值是可以改变的，例如；p = &b;,不要以为只要定义了（const int *）型指针变量，就能保证其所指向的对象的值无法改变<br> 例如：a = 15;</p>
+</blockquote>
+</li>
+<li><strong>用指向常量的指针变量只是限制了通过指针变量改变它指向的对象的值。</strong><h3 id="2-常指针"><a href="#2-常指针" class="headerlink" title="2.常指针"></a>2.常指针</h3></li>
+<li>一般形式：类型名 * const 指针变量名;</li>
+<li>例1.9.2<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">6</span>;</span><br><span class="line"><span class="keyword">int</span> *<span class="keyword">const</span> p2 = &amp;a;<span class="comment">//指定p2只能指向变量a;</span></span><br><span class="line">p2 = &amp;b;<span class="comment">// 不合法</span></span><br></pre></td></tr></table></figure></li>
+<li>注意：<br>1)这种指针被称为<strong>常指针变量</strong>，简称：<strong>常指针</strong>，即指针值不能改变<br>2)必须在定义时初始化，指定其指向。<br>3)指针变量的执行不能改变，但指针变量的指向变量的值可以改变例如：<em>p2 = 12;<br>4)注意const和</em>的位置。const在’*’之后。<h3 id="3-指向常量的常指针"><a href="#3-指向常量的常指针" class="headerlink" title="3.指向常量的常指针"></a>3.指向常量的常指针</h3></li>
+<li>一般形式：const 基本类型名 *const 指针变量名;</li>
+<li>例1.9.3：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> b = <span class="number">20</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span>*<span class="keyword">const</span> pt = &amp;a;</span><br><span class="line">pt = &amp;b;<span class="comment">//试图改变指针变量pt的值，错误</span></span><br><span class="line">*pt = <span class="number">30</span>;<span class="comment">//试图同通过pt改变a的值，错误</span></span><br><span class="line">a = <span class="number">30</span>;<span class="comment">//直接改变a的值，合法</span></span><br><span class="line"><span class="comment">//如果完全禁止改变a的值，可把a定义为常变量</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> a = <span class="number">10</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><h3 id="1-变量的引用"><a href="#1-变量的引用" class="headerlink" title="1.变量的引用"></a>1.变量的引用</h3><p>对一个数据可以建立一个“引用”，它的作用是为<strong>一个变量起一个别名</strong><br>例如：int a ;  int &amp;b = a;(&amp;是引用声明符，通过b可以引用a)</p>
+<ul>
+<li>1)引用不是一种独立的数据类型。对引用只有声明，没有定义。</li>
+<li>2)声明一个引用时，必须同时使之初始化，即声明它代表哪一个变量，在做函数参数时，不必初始化，它的初始化是在函数调用时的<strong>虚实结合</strong>实现的</li>
+<li>3)在声明一个引用后，不能再使之作为另一个变量的引用。<br>int a1 ,a2;<br>int &amp;b = a1;<br>int &amp;b = a2;//不合法</li>
+<li>4)不能建立引用数组<br>  int a[5];<br>  int &amp;b = a;//不合法<br>  int &amp;b = a[0];//错误，不能作为数组元素的别名</li>
+<li><ol start="5">
+<li>不能建立引用的引用<br>int a = 3;<br>int &amp;b = a;<br>int &amp;c = b;//错误</li>
+</ol>
+</li>
+<li><ol start="6">
+<li>可以取引用的地址。<br>int *pt;<br>pt = &b;</li>
+</ol>
+</li>
+<li><ol start="7">
+<li>区别引用声明符&amp;和地址运算符&amp;<br>int &amp;b = a;<br>cout&lt;&lt;&amp;b&lt;&lt;endl;<h3 id="2-引用作为函数参数"><a href="#2-引用作为函数参数" class="headerlink" title="2.引用作为函数参数"></a>2.引用作为函数参数</h3></li>
+</ol>
+</li>
+<li>使用指针变量作形参，实现两个变量的值互换<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">//交换a和b的值</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *p1,<span class="keyword">int</span> *p2)</span></span>;  <span class="comment">//函数声明</span></span><br><span class="line">  <span class="keyword">int</span> *pointer_1, *pointer_2,a,b;</span><br><span class="line">  cin&gt;&gt;a&gt;&gt;b;</span><br><span class="line">  pointer_1 = &amp;a;</span><br><span class="line">  pointer_2 = &amp;b;</span><br><span class="line">  <span class="keyword">if</span>(a &lt; b)<span class="built_in">swap</span>(pointer_1,pointer_2);<span class="comment">//如果a&lt;b，使*pointer_1和*pointer_2互换</span></span><br><span class="line">  cout&lt;&lt;<span class="string">&quot;max = &quot;</span>&lt;&lt;a&lt;&lt;<span class="string">&quot;min = &quot;</span>&lt;&lt;b&lt;&lt;endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *p1,<span class="keyword">int</span> *p2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> temp;</span><br><span class="line">  temp = *p1;</span><br><span class="line">  *p1 = *p2;</span><br><span class="line">  *p2 = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这种虚实结合的方法仍然是值传递方式，只是实参的值是变量的地址而已。</p>
+</blockquote>
+</li>
+<li>用引用做形参<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">//交换a和b的值</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> &amp;p1,<span class="keyword">int</span> &amp;p2)</span></span>;  <span class="comment">//函数声明</span></span><br><span class="line">  <span class="keyword">int</span> a,b;</span><br><span class="line">  cin&gt;&gt;a&gt;&gt;b;</span><br><span class="line">  <span class="keyword">if</span>(a &lt; b)<span class="built_in">swap</span>(a,b);</span><br><span class="line">  cout&lt;&lt;<span class="string">&quot;max = &quot;</span>&lt;&lt;a&lt;&lt;<span class="string">&quot;min = &quot;</span>&lt;&lt;b&lt;&lt;endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> &amp;p1,<span class="keyword">int</span> &amp;p2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> temp;</span><br><span class="line">  temp = p1;</span><br><span class="line">  p1 = p2;</span><br><span class="line">  p2 = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>综上所述，C++在调用函数时有两种方式：传值，传址，在方法一中实参是地址，传递的是地址，仍是传值，而方法二，实参是变量名，传递的是变量的地址</strong></p>
+
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2021/09/28/hello-world/" data-toggle="tooltip" data-placement="top"
+                           title="Hello World">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+
+
+                <!--加入新的评论系统-->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%96%84%E4%BA%8E%E4%BD%BF%E7%94%A8%E6%8C%87%E9%92%88%E5%92%8C%E5%BC%95%E7%94%A8"><span class="toc-text">善于使用指针和引用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E9%92%88"><span class="toc-text">指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E4%BB%80%E4%B9%88%E6%98%AF%E6%8C%87%E9%92%88"><span class="toc-text">1.1 什么是指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E5%8F%98%E9%87%8F%E4%B8%8E%E6%8C%87%E9%92%88"><span class="toc-text">1.2 变量与指针</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-1%E5%AE%9A%E4%B9%89%E6%8C%87%E9%92%88%E5%8F%98%E9%87%8F"><span class="toc-text">1.2.1定义指针变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-2%E5%BC%95%E7%94%A8%E6%8C%87%E9%92%88%E5%8F%98%E9%87%8F"><span class="toc-text">1.2.2引用指针变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-3-%E7%94%A8%E6%8C%87%E9%92%88%E5%81%9A%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="toc-text">1.2.3 用指针做函数参数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3%E6%95%B0%E7%BB%84%E4%B8%8E%E6%8C%87%E9%92%88"><span class="toc-text">1.3数组与指针</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-1-%E6%8C%87%E5%90%91%E6%95%B0%E7%BB%84%E5%85%83%E7%B4%A0%E7%9A%84%E6%8C%87%E9%92%88"><span class="toc-text">1.3.1 指向数组元素的指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2%E7%94%A8%E6%8C%87%E9%92%88%E5%8F%98%E9%87%8F%E5%81%9A%E5%87%BD%E6%95%B0%E5%BD%A2%E5%8F%82%E6%8E%A5%E5%8F%97%E6%95%B0%E7%BB%84%E5%9C%B0%E5%9D%80"><span class="toc-text">1.3.2用指针变量做函数形参接受数组地址</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%8C%87%E9%92%88"><span class="toc-text">1.4 字符串与指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5%E5%87%BD%E6%95%B0%E4%B8%8E%E6%8C%87%E9%92%88"><span class="toc-text">1.5函数与指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-6%E8%BF%94%E5%9B%9E%E6%8C%87%E9%92%88%E5%80%BC%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-text">1.6返回指针值的函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-7-%E6%8C%87%E9%92%88%E6%95%B0%E7%BB%84"><span class="toc-text">1.7 指针数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-8%E6%8C%87%E5%90%91%E6%8C%87%E9%92%88%E7%9A%84%E6%8C%87%E9%92%88"><span class="toc-text">1.8指向指针的指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-9-const%E6%8C%87%E9%92%88"><span class="toc-text">1.9 const指针</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%8C%87%E5%90%91%E5%B8%B8%E9%87%8F%E7%9A%84%E6%8C%87%E9%92%88%E5%8F%98%E9%87%8F"><span class="toc-text">1.指向常量的指针变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%B8%B8%E6%8C%87%E9%92%88"><span class="toc-text">2.常指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%8C%87%E5%90%91%E5%B8%B8%E9%87%8F%E7%9A%84%E5%B8%B8%E6%8C%87%E9%92%88"><span class="toc-text">3.指向常量的常指针</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E7%94%A8"><span class="toc-text">引用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%8F%98%E9%87%8F%E7%9A%84%E5%BC%95%E7%94%A8"><span class="toc-text">1.变量的引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%BC%95%E7%94%A8%E4%BD%9C%E4%B8%BA%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="toc-text">2.引用作为函数参数</span></a></li></ol></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Hexo 2021
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a target="_blank" rel="noopener" href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/blog.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','','2.0.0');
+</script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="">
+</body>
+
+</html>
